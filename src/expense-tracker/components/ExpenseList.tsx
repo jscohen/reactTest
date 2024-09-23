@@ -10,15 +10,21 @@ interface Expense {
 
 interface Props {
   expenses: Expense[];
+  changeExpenses: React.Dispatch<React.SetStateAction<Expense[]>>;
 }
 
-const ExpenseList = ({ expenses }: Props) => {
+const ExpenseList = ({ expenses, changeExpenses }: Props) => {
   const [selectedCategory, setSeletectedCategory] = useState("");
 
   const handleCategoryChange = (event: React.ChangeEvent) => {
-    setSeletectedCategory(event.target.value);
+    setSeletectedCategory((event.target as HTMLInputElement).value);
   };
 
+  const removeExpense = (event: React.MouseEvent, exp: Expense) => {
+    changeExpenses(
+      expenses.filter((expense) => expense && expense.id !== exp.id)
+    );
+  };
   return (
     <>
       <div className="mb-3">
@@ -48,12 +54,17 @@ const ExpenseList = ({ expenses }: Props) => {
         </thead>
         <tbody>
           {expenses.map((expense) => {
-            return expense.category === selectedCategory ? (
+            return expense && expense.category === selectedCategory ? (
               <tr>
                 <td>{expense.description}</td>
                 <td>{expense.amount}</td>
                 <td>{expense.category}</td>
-                <button>Delete</button>
+                <button
+                  type="submit"
+                  onClick={(e) => removeExpense(e, expense)}
+                >
+                  Delete
+                </button>
               </tr>
             ) : (
               <></>
